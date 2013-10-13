@@ -18,9 +18,9 @@ class TweetHandler(webapp2.RequestHandler):
         api = tweepy.API(auth)
 
         if not govt_open():
-            text = 'As of {}, {}'.format(time.strftime('%x, %I:%M'), random.choice(no_responses))
+            text = 'As of {} GMT, {}'.format(time.strftime('%x, %H:%M'), random.choice(no_responses))
         else:
-            text = 'As of {}, {}'.format(time.strftime('%x, %I:%M'), random.choice(yes_responses))
+            text = 'As of {} GMT, {}'.format(time.strftime('%x, %H:%M'), random.choice(yes_responses))
 
         api.update_status(text)
         self.response.write('hai there<br>I just tweeted {}'.format(text))
