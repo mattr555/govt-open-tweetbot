@@ -1,7 +1,8 @@
 import webapp2
 import urllib
 import tweepy
-from google.appengine.api import memcache
+import random
+import time
 
 def govt_open():
     u = urllib.urlopen('http://isthegovernmentopenyet.com').read()
@@ -17,19 +18,9 @@ class TweetHandler(webapp2.RequestHandler):
         api = tweepy.API(auth)
 
         if not govt_open():
-            c = memcache.get('next_no_response')
-            if c is None:
-                c = 0
-            text = no_responses[c % len(no_responses)]
-            c += 1
-            memcache.set('next_no_response', c)
+            text = 'As of {}, {}'.format(time.strftime('%x, %I:%M'), random.choice(no_responses))
         else:
-            c = memcache.get('next_yes_response')
-            if c is None:
-                c = 0
-            text = yes_responses[c % len(yes_responses)]
-            c += 1
-            memcache.set('next_yes_response', c)
+            text = 'As of {}, {}'.format(time.strftime('%x, %I:%M'), random.choice(yes_responses))
 
         api.update_status(text)
         self.response.write('hai there<br>I just tweeted {}'.format(text))
