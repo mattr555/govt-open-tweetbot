@@ -1,13 +1,14 @@
 import webapp2
 import urllib
-import random
 import tweepy
+from google.appengine.api import memcache
 
 def govt_open():
     u = urllib.urlopen('http://isthegovernmentopenyet.com').read()
     return not 'Nope' in u
 
 no_responses = ['Nope', 'Nah', 'Not yet...', 'No.', 'Negatory']
+yes_responses = ['YES!', 'Yup!', 'yeah', 'affirmative', 'Indeed', 'yessir', 'uh-huh']
 
 class TweetHandler(webapp2.RequestHandler):
     def get(self):
@@ -16,17 +17,21 @@ class TweetHandler(webapp2.RequestHandler):
         api = tweepy.API(auth)
 
         if not govt_open():
-            text = random.choice(no_responses)
+            c = memcache.get('next_no_response')
+            if c is None:
+                c = 0
+            text = no_responses[c % len(no_responses)]
+            c += 1
+            memcache.set('next_no_response', c)
         else:
-            text = 'YES!'
+            c = memcache.get('next_yes_response')
+            if c is None:
+                c = 0
+            text = yes_responses[c % len(yes_responses)]
+            c += 1
+            memcache.set('next_yes_response', c)
 
-        try:
-            api.update_status(text)
-        except tweepy.TweepError as e:
-            if isinstance(e.message, list):
-                if e.message[0]['code'] == 187:   #duplicate tweet
-                    text = 'nah-uh'
-                    api.update_status(text)   #this can't duplicate
+        api.update_status(text)
         self.response.write('hai there<br>I just tweeted {}'.format(text))
 
 app = webapp2.WSGIApplication([
