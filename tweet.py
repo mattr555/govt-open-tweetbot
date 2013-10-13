@@ -20,7 +20,13 @@ class TweetHandler(webapp2.RequestHandler):
         else:
             text = 'YES!'
 
-        api.update_status(text)
+        try:
+            api.update_status(text)
+        except tweepy.TweepError as e:
+            if isinstance(e.message, list):
+                if e.message[0]['code'] == 187:   #duplicate tweet
+                    text = 'nah-uh'
+                    api.update_status(text)   #this can't duplicate
         self.response.write('hai there<br>I just tweeted {}'.format(text))
 
 app = webapp2.WSGIApplication([
