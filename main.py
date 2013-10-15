@@ -16,8 +16,8 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **kw))
 
 def govt_open():
-    u = urllib.urlopen('http://isthegovernmentopenyet.com').read()
-    return not 'Nope' in u
+    u = urllib.urlopen('http://www.nasa.gov/')
+    return not u.url == 'http://notice.usa.gov'
 
 class MainHandler(Handler):
     def get(self):

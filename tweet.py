@@ -1,12 +1,8 @@
 import webapp2
-import urllib
 import tweepy
 import random
 import datetime
-
-def govt_open():
-    u = urllib.urlopen('http://isthegovernmentopenyet.com').read()
-    return not 'Nope' in u
+from main import govt_open
 
 no_responses = ['Nope', 'Nah', 'Not yet...', 'No.', 'Negatory', 'Nada', 'Soon???']
 yes_responses = ['YES!', 'Yup!', 'yeah', 'affirmative', 'Indeed', 'yessir', 'uh-huh']
